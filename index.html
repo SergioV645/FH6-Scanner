@@ -166,6 +166,98 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;heigh
 .eye-clear:hover{color:#ff3366;}
 .eye-hint{margin-top:7px;font-size:12px;color:var(--accent2);text-align:center;padding:6px;background:rgba(0,212,255,.06);border-radius:4px;border:1px dashed rgba(0,212,255,.2);animation:eyepulse 1.5s ease-in-out infinite;}
 #ca.eye-mode{cursor:crosshair;}
+
+/* ── MOBILE RESPONSIVE ─────────────────────────────── */
+@media (max-width: 640px) {
+  /* body scroll on mobile */
+  body{overflow:auto;height:auto;}
+  html{height:auto;}
+
+  /* header compacto */
+  header{padding:10px 14px;gap:9px;}
+  h1{font-size:20px;letter-spacing:2px;}
+  .sub{display:none;}
+  .logo{width:30px;height:30px;font-size:13px;}
+
+  /* layout: stack vertically */
+  .main{flex-direction:column;overflow:visible;min-height:0;}
+
+  /* mapa arriba, altura fija */
+  .canvas-area{height:55vw;min-height:200px;max-height:340px;flex:none;overflow:hidden;}
+
+  /* sidebar pasa a ser panel abajo */
+  .sidebar{
+    width:100%;
+    border-right:none;
+    border-top:1px solid var(--border);
+    overflow:hidden;
+    max-height:0;
+    padding:0 14px;
+    gap:0;
+    transition:max-height .35s ease, padding .3s ease;
+  }
+  .sidebar.open{
+    max-height:2000px;
+    padding:14px;
+    gap:14px;
+    overflow-y:auto;
+  }
+
+  /* botón flotante "controles" */
+  .mob-fab{
+    display:flex;
+    position:fixed;
+    bottom:80px;
+    right:14px;
+    z-index:20;
+    align-items:center;
+    gap:7px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:30px;
+    padding:9px 16px;
+    font-family:'Rajdhani',sans-serif;
+    font-size:14px;
+    font-weight:700;
+    color:var(--text);
+    cursor:pointer;
+    box-shadow:0 4px 20px rgba(0,0,0,.5);
+    transition:border-color .15s;
+  }
+  .mob-fab:hover{border-color:var(--accent);}
+  .mob-fab.open{border-color:var(--accent);color:var(--accent);}
+
+  /* botón analizar flotante abajo */
+  .mob-analyze{
+    display:flex;
+    position:fixed;
+    bottom:14px;
+    left:14px;
+    right:14px;
+    z-index:20;
+    padding:14px;
+    background:var(--accent);
+    border:none;
+    border-radius:8px;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:20px;
+    letter-spacing:3px;
+    color:#000;
+    cursor:pointer;
+    justify-content:center;
+    box-shadow:0 4px 20px rgba(255,107,26,.4);
+  }
+  .mob-analyze:disabled{background:var(--border);color:var(--dim);box-shadow:none;}
+
+  /* ocultar botón analizar de sidebar en móvil */
+  #abtn{display:none;}
+
+  /* zoom buttons más grandes en móvil */
+  .zc{bottom:74px;right:60px;}
+}
+/* en desktop ocultar elementos solo-móvil */
+.mob-fab{display:none;}
+.mob-analyze{display:none;}
 </style>
 </head>
 <body>
@@ -292,7 +384,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;heigh
 
     <button class="btn-p" id="abtn" onclick="analyze()" disabled data-i18n="btn-analyze">ANALIZAR MAPA</button>
 
-
     <div>
       <div class="sec" data-i18n="sec-legend">🗝 Leyenda</div>
       <div class="leg">
@@ -328,6 +419,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;heigh
   <button class="zb" onclick="zoom(0.8)" title="Zoom −">−</button>
   <button class="zb" onclick="resetZ()" title="Ajustar">⊙</button>
 </div>
+
+<!-- Mobile only: floating buttons -->
+<button class="mob-fab" id="mobFab" onclick="toggleMobPanel()">⚙️ Controles</button>
+<button class="mob-analyze" id="mobAnalyze" onclick="analyze()" disabled>ANALIZAR MAPA</button>
 <canvas id="ofc" style="display:none"></canvas>
 
 <script>
@@ -412,10 +507,24 @@ function setLang(lang){
     } else { el.innerHTML=tr[k]; }
   });
   document.getElementById('h-sub').textContent=tr['h-sub'];
+  const mob=document.getElementById('mobAnalyze');
+  if(mob) mob.textContent=tr['btn-analyze']||'ANALIZAR MAPA';
   refreshDonModal(); refreshCodeModal(); refreshDonatedBtn();
 }
 
-// ── ZOOM PRESETS ───────────────────────
+// ── MOBILE PANEL ───────────────────────
+function toggleMobPanel(){
+  const sb = document.querySelector('.sidebar');
+  const fab = document.getElementById('mobFab');
+  const isOpen = sb.classList.toggle('open');
+  fab.classList.toggle('open', isOpen);
+  fab.textContent = isOpen ? '✕ Cerrar' : '⚙️ Controles';
+}
+
+function syncMobAnalyze(disabled){
+  const mob = document.getElementById('mobAnalyze');
+  if(mob){ mob.disabled = disabled; }
+}
 const ZOOM_PRESETS = {
   in:  { tol:24, bs:22, thick:8,  minsz:25 },
   mid: { tol:28, bs:26, thick:6,  minsz:18 },
@@ -549,6 +658,7 @@ function loadImg(file){
       document.getElementById('cw').style.display='block';
       document.getElementById('abtn').disabled=false;
       document.getElementById('zc').style.display='flex';
+      syncMobAnalyze(false);
       document.getElementById('stats').style.display='none';
       document.getElementById('sbtn').style.display='none';
       // use requestAnimationFrame to ensure layout is done before measuring
@@ -657,8 +767,20 @@ function doAnalyze(){
     for(const[l,sz]of Object.entries(cs)) if(sz>=MINSZ) keep.add(+l);
     mc.width=W;mc.height=H;ctx.drawImage(imgEl,0,0);
     if(ovOn){
+      // Dilate detected mask so even 1-2px roads are clearly visible
+      // Dilation radius: 3px on zoom-out preset, 2px otherwise
+      const DILATE = THICK <= 3 ? 3 : 2;
+      const dilated = new Uint8Array(n);
+      for(let y=0;y<H;y++) for(let x=0;x<W;x++){
+        const i=y*W+x;
+        if(!tB[i]||!keep.has(lbB[i])) continue;
+        for(let dy=-DILATE;dy<=DILATE;dy++) for(let dx=-DILATE;dx<=DILATE;dx++){
+          const ny=y+dy, nx=x+dx;
+          if(ny>=0&&ny<H&&nx>=0&&nx<W) dilated[ny*W+nx]=1;
+        }
+      }
       const out=ctx.getImageData(0,0,W,H);const od=out.data;const[hr,hg,hb]=hexToRgb(hlColor);let rh=0;
-      for(let i=0;i<n;i++) if(tB[i]&&keep.has(lbB[i])){const p=i*4;od[p]=od[p]*(1-OPAC)+hr*OPAC|0;od[p+1]=od[p+1]*(1-OPAC)+hg*OPAC|0;od[p+2]=od[p+2]*(1-OPAC)+hb*OPAC|0;rh++;}
+      for(let i=0;i<n;i++) if(dilated[i]){const p=i*4;od[p]=od[p]*(1-OPAC)+hr*OPAC|0;od[p+1]=od[p+1]*(1-OPAC)+hg*OPAC|0;od[p+2]=od[p+2]*(1-OPAC)+hb*OPAC|0;rh++;}
       ctx.putImageData(out,0,0);
       let wc=0;for(let i=0;i<n;i++){const p=i*4;if(colorDist(d[p],d[p+1],d[p+2],247,247,247)<30)wc++;}
       const tot=rh+wc,ep=tot?Math.round(wc/tot*100):0;
