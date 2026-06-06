@@ -788,7 +788,7 @@ function snapAndAnalyze(){
     if(!blob) return;
     loadImg(blob);
     // auto-analyze after image loads — small delay for loadImg to finish
-    setTimeout(()=>{ if(imgEl) analyze(); }, 200);
+    setTimeout(()=>{ if(imgEl) analyze(true); }, 200);
   },'image/jpeg',0.92);
 }
 
@@ -996,13 +996,13 @@ mc.addEventListener('click', function(e){
   mc.style.cursor = '';
 });
 
-function analyze(){
+function analyze(fromShare){
   if(!imgEl) return;
   document.getElementById('proc').classList.add('on');
-  setTimeout(doAnalyze,30);
+  setTimeout(()=>doAnalyze(fromShare),30);
 }
 
-function doAnalyze(){
+function doAnalyze(fromShare){
   try{
     const W=imgEl.width,H=imgEl.height;
     ofc.width=W;ofc.height=H;ofx.drawImage(imgEl,0,0);
@@ -1064,7 +1064,8 @@ function doAnalyze(){
     // Save to gallery
     const epVal = parseInt(document.getElementById('ep').textContent)||0;
     saveToGallery(epVal);
-    bumpScans(); showDonModal(getTotal());
+    bumpScans();
+    if(!fromShare) showDonModal(getTotal());
   }finally{document.getElementById('proc').classList.remove('on');}
 }
 
