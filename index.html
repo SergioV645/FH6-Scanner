@@ -167,6 +167,40 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;heigh
 .eye-hint{margin-top:7px;font-size:12px;color:var(--accent2);text-align:center;padding:6px;background:rgba(0,212,255,.06);border-radius:4px;border:1px dashed rgba(0,212,255,.2);animation:eyepulse 1.5s ease-in-out infinite;}
 #ca.eye-mode{cursor:crosshair;}
 
+/* screenshare */
+.btn-share{width:100%;padding:9px;background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.2);border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;color:var(--accent2);cursor:pointer;transition:all .15s;}
+.btn-share:hover{background:rgba(0,212,255,.12);border-color:var(--accent2);}
+.btn-share.active{background:rgba(255,50,50,.1);border-color:#ff3366;color:#ff3366;}
+.share-status{display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px 10px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:5px;font-size:12px;font-weight:600;color:var(--text);}
+.share-dot{width:8px;height:8px;border-radius:50%;background:#ff3366;flex-shrink:0;animation:livepulse 1s ease-in-out infinite;}
+@keyframes livepulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.8);}}
+.btn-snap{width:100%;margin-top:8px;padding:8px;background:transparent;border:1px solid var(--border);border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;color:var(--dim);cursor:pointer;transition:all .15s;}
+.btn-snap:hover{border-color:var(--accent);color:var(--accent);}
+
+/* gallery button */
+.btn-gallery{width:100%;padding:9px;background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.2);border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;color:var(--accent2);cursor:pointer;transition:all .15s;text-align:center;}
+.btn-gallery:hover{background:rgba(0,212,255,.12);border-color:var(--accent2);}
+
+/* gallery modal */
+.gallery-modal{background:var(--panel);border:1px solid var(--border);border-radius:12px;width:92%;max-width:860px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 0 60px rgba(0,0,0,.8);}
+.gallery-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.gallery-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:#fff;}
+.gallery-sub{font-size:12px;color:var(--dim);padding:8px 20px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;padding:16px;overflow-y:auto;flex:1;}
+.gallery-item{position:relative;border-radius:6px;overflow:hidden;border:2px solid var(--border);cursor:pointer;transition:border-color .15s;aspect-ratio:16/10;background:#000;}
+.gallery-item:hover{border-color:var(--accent);}
+.gallery-item.active{border-color:var(--accent);box-shadow:0 0 12px rgba(255,107,26,.4);}
+.gallery-item img{width:100%;height:100%;object-fit:cover;display:block;}
+.gallery-item-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.8));padding:6px 8px;display:flex;justify-content:space-between;align-items:center;}
+.gal-ts{font-size:10px;color:rgba(255,255,255,.7);font-family:monospace;}
+.gal-pct{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;}
+.gal-del{background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:14px;padding:0 2px;line-height:1;transition:color .15s;}
+.gal-del:hover{color:#ff3366;}
+.gallery-empty{display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px;color:var(--dim);font-size:13px;text-align:center;line-height:1.7;flex:1;}
+.gallery-empty.show{display:flex;}
+.gal-btn-clear{padding:6px 12px;background:transparent;border:1px solid var(--border);border-radius:4px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;color:var(--dim);cursor:pointer;transition:all .15s;}
+.gal-btn-clear:hover{border-color:#ff3366;color:#ff3366;}
+
 /* ── MOBILE RESPONSIVE ─────────────────────────────── */
 @media (max-width: 640px) {
   /* body scroll on mobile */
@@ -300,6 +334,25 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;heigh
   </div>
 </div>
 
+<!-- GALLERY MODAL -->
+<div class="modal-bg" id="galleryModal">
+  <div class="gallery-modal">
+    <div class="gallery-header">
+      <div class="gallery-title" id="gal-title">🗂️ Galería de capturas</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="gal-btn-clear" onclick="clearGallery()" id="gal-clear">🗑️ Limpiar</button>
+        <button class="modal-close" onclick="closeGallery()" style="position:static;font-size:22px">✕</button>
+      </div>
+    </div>
+    <div class="gallery-sub" id="gal-sub">Haz click en una imagen para verla en el mapa principal</div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+    <div class="gallery-empty" id="galleryEmpty">
+      <div style="font-size:48px;margin-bottom:12px;opacity:.3">🗾</div>
+      <div id="gal-empty-txt">Aún no hay capturas guardadas.<br>Analiza el mapa para empezar.</div>
+    </div>
+  </div>
+</div>
+
 <header>
   <div class="logo">🗺</div>
   <div>
@@ -324,6 +377,26 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;heigh
         <span class="drop-icon">📸</span>
         <div class="drop-t" data-i18n="drop-title">Screenshot del mapa</div>
         <div class="drop-s" data-i18n="drop-sub">Arrastra o toca para subir</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:11px;color:var(--dim);text-align:center">
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+        <span data-i18n="or-label">O</span>
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+      </div>
+      <button class="btn-share" id="shareBtn" onclick="toggleShare()" data-i18n="btn-share">🖥️ Compartir pantalla (live)</button>
+      <!-- screenshare status -->
+      <div class="share-status" id="shareStatus" style="display:none">
+        <div class="share-dot" id="shareDot"></div>
+        <span id="shareStatusTxt">Compartiendo pantalla</span>
+        <button onclick="stopShare()" style="margin-left:auto;background:none;border:none;color:var(--dim);cursor:pointer;font-size:15px;line-height:1" title="Detener">✕</button>
+      </div>
+      <!-- interval control -->
+      <div id="shareControls" style="display:none;margin-top:8px">
+        <div class="ci">
+          <label data-i18n="lbl-interval">Captura cada <span id="tv-int">3</span>s</label>
+          <input type="range" id="sInt" min="1" max="10" value="3" oninput="document.getElementById('tv-int').textContent=this.value;updateInterval()">
+        </div>
+        <button class="btn-snap" onclick="snapAndAnalyze()" data-i18n="btn-snap">📸 Capturar ahora</button>
       </div>
     </div>
 
@@ -384,6 +457,17 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;heigh
 
     <button class="btn-p" id="abtn" onclick="analyze()" disabled data-i18n="btn-analyze">ANALIZAR MAPA</button>
 
+    <div id="stats" style="display:none">
+      <div class="sec" data-i18n="sec-results">📊 Resultados</div>
+      <div class="sgrid">
+        <div class="sb"><div class="sv g" id="ep">—</div><div class="sl" data-i18n="stat-exp">Explorado</div></div>
+        <div class="sb"><div class="sv b" id="up">—</div><div class="sl" data-i18n="stat-miss">Faltante</div></div>
+        <div class="sb"><div class="sv" id="rp">—</div><div class="sl" data-i18n="stat-total">Px total</div></div>
+        <div class="sb"><div class="sv w" id="gp">—</div><div class="sl" data-i18n="stat-undriven">Sin recorrer</div></div>
+      </div>
+      <div class="pb"><div class="pbf" id="pbar" style="width:0%"></div></div>
+    </div>
+
     <div>
       <div class="sec" data-i18n="sec-legend">🗝 Leyenda</div>
       <div class="leg">
@@ -397,6 +481,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;heigh
     <div class="tip" data-i18n="tip-text">💡 <strong>Mucho ruido:</strong> baja la tolerancia o sube el segmento mín.<br><strong>Faltan carreteras:</strong> sube la tolerancia o el grosor.</div>
 
     <button class="btn-s" id="sbtn" onclick="saveImg()" style="display:none" data-i18n="btn-save">GUARDAR IMAGEN</button>
+    <button class="btn-gallery" id="galleryBtn" onclick="openGallery()" style="display:none" data-i18n="btn-gallery">🗂️ Ver galería (<span id="galleryCount">0</span>)</button>
     <button class="btn-donated" id="donatedBtn" onclick="showCode()">
       <span id="donated-icon">☕</span><span data-i18n="btn-donated" id="donated-text">Ya doné</span>
     </button>
@@ -435,6 +520,12 @@ const i18n = {
   es:{
     'h-sub':'Forza Horizon 6 · Detector de carreteras',
     'sec-upload':'📂 Subir mapa','drop-title':'Screenshot del mapa','drop-sub':'Arrastra o toca para subir',
+    'or-label':'O',
+    'btn-share':'🖥️ Compartir pantalla (live)',
+    'btn-share-stop':'🛑 Detener pantalla',
+    'share-status':'● Compartiendo pantalla',
+    'lbl-interval':'Captura cada',
+    'btn-snap':'📸 Capturar ahora',
     'sec-detect':'⚙️ Detección','lbl-tol':'Tolerancia gris','lbl-bs':'Máx. blue-shift',
     'lbl-thick':'Grosor máx. carretera','lbl-minsz':'Segmento mín.','lbl-opac':'Opacidad overlay',
     'lbl-zoom':'Zoom del mapa','zoom-in':'🔍 Cerca','zoom-mid':'🗺 Medio','zoom-out':'🌍 Lejos',
@@ -448,6 +539,11 @@ const i18n = {
     'sec-legend':'🗝 Leyenda','leg-driven':'Carretera recorrida','leg-undriven':'Sin recorrer (resaltada)','leg-dirt':'Camino sin pavimentar','leg-fog':'Terreno / fog of war',
     'tip-text':'💡 <strong>Mucho ruido:</strong> baja la tolerancia o sube el segmento mín.<br><strong>Faltan carreteras:</strong> sube la tolerancia o el grosor.',
     'btn-save':'GUARDAR IMAGEN','btn-donated':'Ya doné','btn-donated-done':'✓ Alertas silenciadas',
+    'btn-gallery':'🗂️ Galería',
+    'gal-title':'🗂️ Galería de capturas',
+    'gal-sub':'Haz click en una imagen para cargarla en el mapa · Las imágenes se guardan en esta sesión',
+    'gal-empty':'Aún no hay capturas.<br>Analiza el mapa para empezar.',
+    'gal-clear':'🗑️ Limpiar',
     'btn-eye':'🎯 Samplear color de carretera',
     'eye-sampled':'Color sampleado','eye-hint':'👆 Haz click sobre una carretera gris no recorrida',
     'empty-title':'Sube tu mapa de FH6','empty-sub':'Toma un screenshot del mapa en el juego y súbelo. El escáner detectará las carreteras grises aún no recorridas.',
@@ -463,6 +559,12 @@ const i18n = {
   en:{
     'h-sub':'Forza Horizon 6 · Road Detector',
     'sec-upload':'📂 Upload Map','drop-title':'Map Screenshot','drop-sub':'Drag & drop or tap to upload',
+    'or-label':'OR',
+    'btn-share':'🖥️ Share screen (live)',
+    'btn-share-stop':'🛑 Stop sharing',
+    'share-status':'● Sharing screen',
+    'lbl-interval':'Capture every',
+    'btn-snap':'📸 Capture now',
     'sec-detect':'⚙️ Detection','lbl-tol':'Gray tolerance','lbl-bs':'Max. blue-shift',
     'lbl-thick':'Max. road thickness','lbl-minsz':'Min. segment','lbl-opac':'Overlay opacity',
     'lbl-zoom':'Map zoom','zoom-in':'🔍 Close','zoom-mid':'🗺 Medium','zoom-out':'🌍 Far',
@@ -476,6 +578,11 @@ const i18n = {
     'sec-legend':'🗝 Legend','leg-driven':'Driven road','leg-undriven':'Undriven (highlighted)','leg-dirt':'Unpaved dirt road','leg-fog':'Terrain / fog of war',
     'tip-text':'💡 <strong>Too much noise:</strong> lower tolerance or raise min. segment.<br><strong>Missing roads:</strong> raise tolerance or thickness.',
     'btn-save':'SAVE IMAGE','btn-donated':'I donated','btn-donated-done':'✓ Alerts silenced',
+    'btn-gallery':'🗂️ Gallery',
+    'gal-title':'🗂️ Capture gallery',
+    'gal-sub':'Click an image to load it into the map · Images are saved for this session',
+    'gal-empty':'No captures yet.<br>Analyze the map to get started.',
+    'gal-clear':'🗑️ Clear all',
     'btn-eye':'🎯 Sample road color',
     'eye-sampled':'Sampled color','eye-hint':'👆 Click on a gray undriven road',
     'empty-title':'Upload your FH6 Map','empty-sub':'Take a screenshot of the in-game map and upload it here.',
@@ -525,6 +632,166 @@ function syncMobAnalyze(disabled){
   const mob = document.getElementById('mobAnalyze');
   if(mob){ mob.disabled = disabled; }
 }
+// ── GALLERY ────────────────────────────
+const gallery = []; // [{dataUrl, timestamp, pct, label}]
+
+function saveToGallery(pct){
+  const dataUrl = mc.toDataURL('image/jpeg', 0.88);
+  const now = new Date();
+  const ts = now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  gallery.unshift({ dataUrl, ts, pct }); // newest first
+  // limit to 30 captures
+  if(gallery.length > 30) gallery.pop();
+  updateGalleryBtn();
+}
+
+function updateGalleryBtn(){
+  const btn = document.getElementById('galleryBtn');
+  const cnt = document.getElementById('galleryCount');
+  if(!btn) return;
+  btn.style.display = gallery.length > 0 ? 'block' : 'none';
+  if(cnt) cnt.textContent = gallery.length;
+}
+
+function openGallery(){
+  renderGalleryGrid();
+  document.getElementById('galleryModal').classList.add('on');
+  // update texts
+  document.getElementById('gal-title').textContent = t('gal-title') || '🗂️ Galería';
+  document.getElementById('gallery-sub') && (document.getElementById('gallery-sub').textContent = t('gal-sub'));
+}
+function closeGallery(){ document.getElementById('galleryModal').classList.remove('on'); }
+
+function renderGalleryGrid(){
+  const grid = document.getElementById('galleryGrid');
+  const empty = document.getElementById('galleryEmpty');
+  grid.innerHTML = '';
+  if(gallery.length === 0){
+    empty.classList.add('show');
+    empty.innerHTML = `<div style="font-size:48px;margin-bottom:12px;opacity:.3">🗾</div><div>${t('gal-empty')||'No captures yet.'}</div>`;
+    return;
+  }
+  empty.classList.remove('show');
+  gallery.forEach((item, idx) => {
+    const color = item.pct >= 80 ? '#00ff88' : item.pct >= 50 ? '#ffee00' : '#ff3366';
+    const div = document.createElement('div');
+    div.className = 'gallery-item';
+    div.innerHTML = `
+      <img src="${item.dataUrl}" alt="capture ${idx+1}" loading="lazy">
+      <div class="gallery-item-overlay">
+        <span class="gal-ts">${item.ts}</span>
+        <span class="gal-pct" style="color:${color}">${item.pct}%</span>
+        <button class="gal-del" onclick="deleteCapture(${idx},event)" title="Eliminar">✕</button>
+      </div>`;
+    div.addEventListener('click', ()=> loadFromGallery(idx, div));
+    grid.appendChild(div);
+  });
+}
+
+function loadFromGallery(idx, el){
+  // Mark active
+  document.querySelectorAll('.gallery-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  // Load image into main canvas
+  const img = new Image();
+  img.onload = ()=>{
+    imgEl = img;
+    mc.width = img.width; mc.height = img.height;
+    ctx.drawImage(img, 0, 0);
+    document.getElementById('emp').style.display = 'none';
+    document.getElementById('cw').style.display = 'block';
+    document.getElementById('abtn').disabled = false;
+    syncMobAnalyze(false);
+    requestAnimationFrame(()=>requestAnimationFrame(fitCanvas));
+    closeGallery();
+  };
+  img.src = gallery[idx].dataUrl;
+}
+
+function deleteCapture(idx, e){
+  e.stopPropagation();
+  gallery.splice(idx, 1);
+  updateGalleryBtn();
+  renderGalleryGrid();
+}
+
+function clearGallery(){
+  gallery.length = 0;
+  updateGalleryBtn();
+  renderGalleryGrid();
+}
+
+// ── SCREENSHARE ────────────────────────
+let shareStream   = null;
+let shareVideo    = null;
+let shareInterval = null;
+let shareCanvas   = null;
+let shareCtx2     = null;
+
+async function toggleShare(){
+  if(shareStream){ stopShare(); return; }
+  if(!navigator.mediaDevices?.getDisplayMedia){
+    alert('Tu navegador no soporta compartir pantalla. Usa Chrome o Edge.'); return;
+  }
+  try{
+    shareStream = await navigator.mediaDevices.getDisplayMedia({video:{frameRate:5}, audio:false});
+    shareVideo  = document.createElement('video');
+    shareVideo.srcObject = shareStream;
+    shareVideo.muted = true;
+    await shareVideo.play();
+
+    shareCanvas = document.createElement('canvas');
+    shareCtx2   = shareCanvas.getContext('2d');
+
+    // UI
+    document.getElementById('shareBtn').classList.add('active');
+    document.getElementById('shareBtn').textContent = t('btn-share-stop');
+    document.getElementById('shareStatus').style.display = 'flex';
+    document.getElementById('shareStatusTxt').textContent = t('share-status');
+    document.getElementById('shareControls').style.display = 'block';
+    document.getElementById('abtn').disabled = false;
+    syncMobAnalyze(false);
+
+    // Auto-capture on interval
+    const secs = parseInt(document.getElementById('sInt').value)||3;
+    shareInterval = setInterval(snapAndAnalyze, secs*1000);
+
+    // Stop if user ends share from browser UI
+    shareStream.getVideoTracks()[0].addEventListener('ended', stopShare);
+
+  }catch(e){ shareStream=null; }
+}
+
+function stopShare(){
+  if(shareInterval){ clearInterval(shareInterval); shareInterval=null; }
+  if(shareStream){ shareStream.getTracks().forEach(t=>t.stop()); shareStream=null; }
+  shareVideo=null;
+  document.getElementById('shareBtn').classList.remove('active');
+  document.getElementById('shareBtn').textContent = t('btn-share');
+  document.getElementById('shareStatus').style.display  = 'none';
+  document.getElementById('shareControls').style.display = 'none';
+}
+
+function updateInterval(){
+  if(!shareStream) return;
+  if(shareInterval) clearInterval(shareInterval);
+  const secs = parseInt(document.getElementById('sInt').value)||3;
+  shareInterval = setInterval(snapAndAnalyze, secs*1000);
+}
+
+function snapAndAnalyze(){
+  if(!shareVideo||shareVideo.readyState<2) return;
+  shareCanvas.width  = shareVideo.videoWidth;
+  shareCanvas.height = shareVideo.videoHeight;
+  shareCtx2.drawImage(shareVideo, 0, 0);
+  shareCanvas.toBlob(blob=>{
+    if(!blob) return;
+    loadImg(blob);
+    // auto-analyze after image loads — small delay for loadImg to finish
+    setTimeout(()=>{ if(imgEl) analyze(); }, 200);
+  },'image/jpeg',0.92);
+}
+
 const ZOOM_PRESETS = {
   in:  { tol:24, bs:22, thick:8,  minsz:25 },
   mid: { tol:28, bs:26, thick:6,  minsz:18 },
@@ -794,6 +1061,9 @@ function doAnalyze(){
     document.getElementById('stats').style.display='block';
     document.getElementById('sbtn').style.display='block';
     requestAnimationFrame(()=>requestAnimationFrame(fitCanvas));
+    // Save to gallery
+    const epVal = parseInt(document.getElementById('ep').textContent)||0;
+    saveToGallery(epVal);
     bumpScans(); showDonModal(getTotal());
   }finally{document.getElementById('proc').classList.remove('on');}
 }
